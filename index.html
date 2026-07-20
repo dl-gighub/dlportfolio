@@ -320,7 +320,7 @@
     <a class="pill-link" data-target="portfolio" href="#portfolio">Portfolio</a>
     <a class="pill-link" data-target="lab" href="#lab">Lab</a>
     <a class="pill-link" data-target="background" href="#background">Background</a>
-    <a class="pill-link" href="YOUR_RESUME_PDF_URL" target="_blank" rel="noopener">Resume ↗</a>
+    <a class="pill-link" href="DL_Resume_2026_Cloud.pdf" target="_blank" rel="noopener">Resume ↗</a>
   </div>
   <button class="pill-cta" onclick="go('contact')">Let's Connect</button>
 </nav>
@@ -416,7 +416,7 @@
         <div class="tl-item reveal d1">
           <div class="tl-left"><div class="tl-dot"></div><div class="tl-line"></div></div>
           <div>
-            <div class="tl-year">2019 – 2024</div>
+            <div class="tl-year">Sept 2019 – Oct 2024</div>
             <div class="tl-role">Multiple Roles incl. Program Ops — CyberSecurity</div>
             <div class="tl-co">Comcast</div>
           </div>
@@ -424,8 +424,16 @@
         <div class="tl-item reveal d2">
           <div class="tl-left"><div class="tl-dot"></div><div class="tl-line"></div></div>
           <div>
-            <div class="tl-year">2024 – Present</div>
-            <div class="tl-role">Cloud FinOps Analyst</div>
+            <div class="tl-year">Oct 2024 – Sept 2025</div>
+            <div class="tl-role">✈️ Traveling &amp; Discovering Life Outside the 9–5</div>
+            <div class="tl-co">11 months, new cities, zero regrets</div>
+          </div>
+        </div>
+        <div class="tl-item reveal d3">
+          <div class="tl-left"><div class="tl-dot"></div><div class="tl-line"></div></div>
+          <div>
+            <div class="tl-year">Sept 2025 – Present</div>
+            <div class="tl-role">Cloud FinOps Engineer</div>
             <div class="tl-co">Avis Budget Group — AWS, Azure, GCP, OCI</div>
           </div>
         </div>
@@ -459,7 +467,7 @@
 
   <div class="contact-footer">
     <a class="contact-link" href="mailto:q.david.lun@gmail.com">✉️ q.david.lun@gmail.com</a>
-    <a class="contact-link" href="YOUR_LINKEDIN_URL" target="_blank" rel="noopener">🔗 LinkedIn</a>
+    <a class="contact-link" href="https://www.linkedin.com/in/davidlun22/" target="_blank" rel="noopener">🔗 LinkedIn</a>
   </div>
   <div class="contact-copy-bar">All Rights Reserved 2026 David Lun</div>
 </section>
@@ -468,7 +476,7 @@
   // ─────────────────────────────────────────────
   // CONFIG — swap these before going live
   // ─────────────────────────────────────────────
-  const FORMSPREE_ENDPOINT = 'https://formspree.io/f/YOUR_FORM_ID';
+  const FORMSPREE_ENDPOINT = 'https://formspree.io/f/xaqrjlyw';
 
   // ── Scripted chat flow ──
   const steps = [
@@ -561,16 +569,17 @@
   }
 
   function submitLead() {
-    fetch(FORMSPREE_ENDPOINT, {
+    return fetch(FORMSPREE_ENDPOINT, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
       body: JSON.stringify({
         name: userData.name,
         reason: userData.reason,
         message: userData.message,
-        email: userData.email
+        email: userData.email,
+        _subject: `Portfolio contact — ${userData.name} (${userData.reason})`
       })
-    }).catch(err => console.error('Lead submission failed:', err));
+    }).then(r => r.ok).catch(() => false);
   }
 
   function advanceStep(userInput) {
@@ -585,8 +594,22 @@
       daveRespond(steps[3].text);
     } else if (step === 4) {
       userData.email = userInput;
-      submitLead();
-      daveRespond(steps[4].text(userData.email), null, true);
+      input.disabled = true;
+      sendBtn.disabled = true;
+      addTyping();
+      const minDelay = new Promise(res => setTimeout(res, 1200));
+      Promise.all([submitLead(), minDelay]).then(([ok]) => {
+        removeTyping();
+        if (ok) {
+          addBubble(steps[4].text(userData.email), 'success');
+        } else {
+          addBubble(
+            `Hmm — that didn't go through 😅 Mind emailing Dave directly at <a href="mailto:q.david.lun@gmail.com" style="color:#007AFF;font-weight:700;">q.david.lun@gmail.com</a>? He'll reply personally.`,
+            'dave',
+            true
+          );
+        }
+      });
     }
   }
 
